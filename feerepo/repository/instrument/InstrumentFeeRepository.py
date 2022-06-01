@@ -1,6 +1,7 @@
 from typing import Optional
 
 from cache.holder.RedisCacheHolder import RedisCacheHolder
+from core.exchange.InstrumentExchange import InstrumentExchange
 from core.number.BigFloat import BigFloat
 from core.options.exception.MissingOptionError import MissingOptionError
 from coreutility.collection.dictionary_utility import as_data
@@ -24,15 +25,15 @@ class InstrumentFeeRepository:
     def __build_key(self):
         return self.options[INSTRUMENT_TRADE_FEE_KEY]
 
-    def retrieve_instrument_trade_fee(self, instrument) -> Optional[BigFloat]:
+    def retrieve_instrument_trade_fee(self, instrument_exchange) -> Optional[BigFloat]:
         instrument_trade_fees = self.retrieve_all()
-        trade_fee = as_data(instrument_trade_fees, instrument)
+        trade_fee = as_data(instrument_trade_fees, str(instrument_exchange))
         return BigFloat(trade_fee) if trade_fee is not None else None
 
-    def store_instrument_trade_fee(self, fee, instrument):
+    def store_instrument_trade_fee(self, fee, instrument_exchange):
         key = self.__build_key()
         instrument_trade_fees = self.retrieve_all()
-        instrument_trade_fees[instrument] = str(fee)
+        instrument_trade_fees[str(instrument_exchange)] = str(fee)
         self.cache.store(key, instrument_trade_fees)
 
     def retrieve_all(self):

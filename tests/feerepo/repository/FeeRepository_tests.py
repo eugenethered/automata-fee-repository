@@ -1,6 +1,7 @@
 import unittest
 
 from cache.holder.RedisCacheHolder import RedisCacheHolder
+from core.exchange.InstrumentExchange import InstrumentExchange
 from core.number.BigFloat import BigFloat
 
 from feerepo.repository.FeeRepository import FeeRepository
@@ -28,19 +29,19 @@ class FeeRepositoryTestCase(unittest.TestCase):
         self.cache.delete('test:fee:trade:instruments')
 
     def test_should_retrieve_fee_at_instrument_level(self):
-        self.instrument_fee_repository.store_instrument_trade_fee(BigFloat('0.25'), 'OTC')
-        trade_fee = self.repository.get_trade_fee('OTC')
+        self.instrument_fee_repository.store_instrument_trade_fee(BigFloat('0.25'), InstrumentExchange('OTC', 'BTC'))
+        trade_fee = self.repository.get_trade_fee(InstrumentExchange('OTC', 'BTC'))
         self.assertEqual(trade_fee, BigFloat('0.25'))
 
     def test_should_retrieve_fee_at_account_level(self):
         self.account_fee_repository.store_account_trade_fee(BigFloat('0.11'))
-        trade_fee = self.repository.get_trade_fee('OTC')
+        trade_fee = self.repository.get_trade_fee(InstrumentExchange('OTC', 'BTC'))
         self.assertEqual(trade_fee, BigFloat('0.11'))
 
     def test_should_raise_exception_when_trade_fee_cannot_be_obtained(self):
         with self.assertRaises(NoTradeFeeError) as ntf:
-            self.repository.get_trade_fee('B@D')
-        self.assertEqual(str(ntf.exception), 'Trade Fee cannot be found at instrument or account level for [B@D]')
+            self.repository.get_trade_fee(InstrumentExchange('OTC', 'B@D'))
+        self.assertEqual(str(ntf.exception), 'Trade Fee cannot be found at instrument or account level for [OTC/B@D]')
 
 
 if __name__ == '__main__':

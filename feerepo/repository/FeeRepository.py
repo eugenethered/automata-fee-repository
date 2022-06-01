@@ -11,10 +11,10 @@ class FeeRepository:
         self.account_repository = AccountFeeRepository(options)
         self.instrument_repository = InstrumentFeeRepository(options)
 
-    def get_trade_fee(self, instrument) -> BigFloat:
-        fee = self.instrument_repository.retrieve_instrument_trade_fee(instrument)
+    def get_trade_fee(self, instrument_exchange) -> BigFloat:
+        fee = self.instrument_repository.retrieve_instrument_trade_fee(instrument_exchange)
         if fee is None:
             fee = self.account_repository.retrieve_account_trade_fee()
         if fee is None:
-            raise NoTradeFeeError(f'Trade Fee cannot be found at instrument or account level for [{instrument}]')
+            raise NoTradeFeeError(f'Trade Fee cannot be found at instrument or account level for [{instrument_exchange}]')
         return fee
