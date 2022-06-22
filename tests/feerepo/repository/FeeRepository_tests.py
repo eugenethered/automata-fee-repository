@@ -18,7 +18,7 @@ class FeeRepositoryTestCase(unittest.TestCase):
             'REDIS_SERVER_ADDRESS': '192.168.1.90',
             'REDIS_SERVER_PORT': 6379,
             'ACCOUNT_TRADE_FEE_KEY': 'test:fee:trade:account',
-            'INSTRUMENT_TRADE_FEE_KEY': 'test:mv:fee:trade:instrument'
+            'INSTRUMENT_TRADE_FEE_KEY': 'test:fee:trade:mv:instrument'
         }
         self.cache = RedisCacheHolder(self.options, held_type=RedisCacheProviderWithHash)
         self.account_fee_repository = AccountFeeRepository(self.options)
@@ -27,7 +27,7 @@ class FeeRepositoryTestCase(unittest.TestCase):
 
     def tearDown(self):
         self.cache.delete('test:fee:trade:account')
-        self.cache.delete('test:mv:fee:trade:instrument')
+        self.cache.delete('test:fee:trade:mv:instrument')
 
     def test_should_retrieve_fee_at_instrument_level(self):
         self.instrument_fee_repository.store_instrument_trade_fee(BigFloat('0.25'), InstrumentExchange('OTC', 'BTC'))
